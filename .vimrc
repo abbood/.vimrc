@@ -21,6 +21,13 @@ set termguicolors
 set hlsearch
 set ignorecase
 
+" for some reason Plugin 'memgraph/cypher.vim' fails to autodetect
+" the cypher file type, so we do it manually here
+" https://stackoverflow.com/a/28117335/766570
+au BufNewFile,BufRead *.cypher setfiletype cypher
+au BufNewFile,BufRead *.cql setfiletype cypher
+au BufNewFile,BufRead *.cyp setfiletype cypher
+
 
 hi Search cterm=NONE ctermfg=black ctermbg=172
 
@@ -38,10 +45,14 @@ autocmd FileType yaml setlocal tabstop=2 softtabstop=2 shiftwidth=2
 
 
 
-"#autocmd FileType php colorscheme spacegray
 autocmd FileType php colorscheme gruvbox
 autocmd FileType java colorscheme gruvbox
 autocmd FileType kotlin colorscheme gruvbox
+autocmd FileType Swift colorscheme gruvbox
+autocmd FileType python colorscheme gruvbox
+autocmd FileType ruby colorscheme gruvbox
+
+
 
 "set tabstop=2       " The width of a TAB is set to 4.
                     " Still it is a \t. It is just that
@@ -121,7 +132,10 @@ Plugin 'nvim-telescope/telescope.nvim'
 
 Plugin 'scrooloose/nerdtree'
 Plugin 'burnettk/vim-angular'
-Plugin 'vim-scripts/AutoComplPop'
+
+" replaced with https://github.com/hrsh7th/nvim-cmp/ 
+" Plugin 'vim-scripts/AutoComplPop'
+
 Plugin 'vim-scripts/cSyntaxAfter'
 Plugin 'w0ng/vim-hybrid'
 Plugin 'majutsushi/tagbar'
@@ -133,9 +147,11 @@ Plugin 'vim-airline/vim-airline-themes'
 Plugin 'vim-scripts/DBGp-Remote-Debugger-Interface'
 Plugin 'tpope/vim-unimpaired'
 Plugin 'ajh17/Spacegray.vim'
-Plugin 'morhetz/gruvbox'
+"Plugin 'morhetz/gruvbox'
+Plugin 'ellisonleao/gruvbox.nvim'
 Plugin 'jnurmine/Zenburn'
 Plugin 'ErichDonGubler/vim-sublime-monokai'
+Plugin 'sainnhe/everforest'
 Plugin 'vim-scripts/Conque-Shell'
 Bundle 'joonty/vim-do'
 Plugin 'Rican7/php-doc-modded'
@@ -144,6 +160,8 @@ Plugin 'dhruvasagar/vim-zoom'
 Plugin 'keith/swift.vim'
 Plugin 'kristijanhusak/vim-hybrid-material'
 Plugin 'udalov/kotlin-vim'
+Plugin 'folke/tokyonight.nvim', { 'branch': 'main' }
+Plugin 'jacoborus/tender.vim'
 " linting
 Plugin 'w0rp/ale'
 "Plugin 'vim-syntastic/syntastic'
@@ -163,13 +181,29 @@ Plugin 'uiiaoo/java-syntax.vim'
 Plugin 'esensar/neovim-kotlin'
 Plugin 'mileszs/ack.vim'
 Plugin 'hashivim/vim-terraform'
+Plugin 'EdenEast/nightfox.nvim'
+Plugin 'catppuccin/nvim', { 'as': 'catppuccin' }
 
 Plugin 'AndrewRadev/diffurcate.vim'
+" Plugin 'pedrohdz/vim-yaml-folds'
+
+" see https://github.com/hrsh7th/nvim-cmp/
+Plugin 'neovim/nvim-lspconfig'
+Plugin 'hrsh7th/cmp-nvim-lsp'
+Plugin 'hrsh7th/cmp-buffer'
+Plugin 'hrsh7th/cmp-path'
+Plugin 'hrsh7th/cmp-cmdline'
+Plugin 'hrsh7th/nvim-cmp'
 Plugin 'wfxr/minimap.vim'
-Plugin 'pedrohdz/vim-yaml-folds'
+Plugin 'memgraph/cypher.vim'
 
-"Plugin 'jason0x43/vim-js-indent'
-
+" Foi vsnip users.
+Plugin 'hrsh7th/cmp-vsnip'
+Plugin 'hrsh7th/vim-vsnip'
+Plugin 'heavenshell/vim-jsdoc', {
+  \ 'for': ['javascript', 'javascript.jsx','typescript'],
+  \ 'do': 'make install'
+\}
 
 
 " All of your Plugins must be added before the following line
@@ -185,8 +219,8 @@ set runtimepath^=~/.vim/bundle/ctrlp.vim
 " NOTE: you must install this using homebrew: brew install the_silver_searcher 
 if executable('ag')
   " Use ag over grep
- " let &grepprg = "ag --nogroup --nocolor --ignore wiki --ignore tags --ignore dist --ignore tests --ignore seeds --ignore migrations --ignore Pods  --ignore newman -w"
-  let &grepprg = "ag --ignore newman --ignore tests --ignore tags --ignore public -w"
+  "let &grepprg = "ag --ignore newman --ignore tests --ignore tags --ignore public -w"
+  let &grepprg = "ag --ignore packages"
 
   " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
   let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
@@ -198,6 +232,19 @@ endif
 " bind K to grep word under cursor
 nnoremap K :grep! "\b<C-R><C-W>\b"<CR>:cw<CR><ENTER>
 
+" see https://vi.stackexchange.com/a/38233/14510
+"nnoremap <silent> K :let old_iskeyword = &iskeyword<CR>
+    "\:set iskeyword+=-<CR>
+    "\:grep! "\b<C-R><C-W>\b"<CR>
+    "\:let &iskeyword = old_iskeyword<CR>
+    "\:unlet old_iskeyword<CR>
+    "\:cw<CR>
+
+" bind L to grep word under cursor for current file only
+"nnoremap L :BLines "\b<C-R><C-W>\b"<CR>
+nnoremap L * yiw:BLines <C-R><C-W><CR>
+
+nnoremap - <C-W>-
 
 " command -nargs=+ -complete=file -bar Ag silent! grep! <args>|cwindow|redraw!
 " above replaced with
@@ -213,11 +260,6 @@ command -nargs=+ -complete=file Ag call Ag(<q-args>)
 " bind \ (backward slash) to grep shortcut
 nnoremap \ :Ag<SPACE>
 
-
-" bind L to grep word under cursor for current file only
-nnoremap L :vim <C-R><C-W> %<CR>:cw<CR>
-"nnoremap L :vim <C-R><C-W> %<CR>:copen<CR>
-
 " https://stackoverflow.com/a/42218001/766570
 nmap <F8> :TagbarToggle<CR>
 nmap <F12> :CtrlP<CR>
@@ -227,13 +269,28 @@ nmap <F1> :cclose<CR>
 " Nerdtree
 map <C-n> :NERDTreeToggle<CR>
 
-map <C-j> :FZF<CR>
+" replacing FZF shortcuts with telescope
+" feel free to undo
+" ------------------------------------------
+ map <C-j> :FZF<CR>
+" nnoremap <C-j> <cmd>Telescope find_files<cr>
+
 map <C-f> :Buffers<CR>
+"nnoremap <C-f> <cmd>Telescope buffers<cr>
+
 map <C-h> :BTags<CR>
+"nnoremap <C-h> <cmd>Telescope current_buffer_tags<cr>
+
 map <C-g> :Tags<CR>
+"nnoremap <C-g> <cmd>Telescope tags<cr>
+
+
+
+" ------------------------------------------
+
 map <C-c> :cclose<CR>
 map <C-l> :copen 50<CR>
-map <leader>l :copen 100<CR>
+map <leader>l :copen 10<CR>
 map <leader>c :copen 10<CR>
 map <leader>b :Git blame<CR> 
 
@@ -270,8 +327,11 @@ set clipboard=unnamed
 " see https://stackoverflow.com/a/8950400/766570
 " " PHP documenter script bound to Control-P
 autocmd FileType php inoremap <C-p> <ESC>:call PhpDocSingle()<CR>i
-autocmd FileType php nnoremap <C-p> :call PhpDocSingle()<CR>
 autocmd FileType php vnoremap <C-p> :call PhpDocRange()<CR>
+
+autocmd FileType typescript nmap <silent> <C-p> <Plug>(jsdoc) 
+autocmd FileType javascript nmap <silent> <C-p> <Plug>(jsdoc) 
+
 
 " vim debugging
 " https://ccpalettes.wordpress.com/2013/06/03/remote-debugging-php-with-vim-and-xdebug/
@@ -318,11 +378,11 @@ let g:python3_host_prog='/Users/abdullah/.pyenv/shims/python3'
 set guifont=DroidSansMono_Nerd_Font:h11
 
 " Find files using Telescope command-line sugar.
-nnoremap <leader>ff <cmd>Telescope find_files<cr>
-nnoremap <leader>tt <cmd>Telescope tags<cr>
-nnoremap <leader>bb <cmd>Telescope current_buffer_tags<cr>
+" nnoremap <leader>ff <cmd>Telescope find_files<cr>
+" nnoremap <leader>tt <cmd>Telescope tags<cr>
+" nnoremap <leader>bb <cmd>Telescope current_buffer_tags<cr>
 nnoremap <leader>fg <cmd>Telescope live_grep<cr>
-nnoremap <leader>fb <cmd>Telescope buffers<cr>
+" nnoremap <leader>fb <cmd>Telescope buffers<cr>
 nnoremap <leader>fh <cmd>Telescope help_tags<cr>
 
 nnoremap <leader>m <cmd>Minimap<cr>
@@ -330,7 +390,5 @@ nnoremap <leader>mc <cmd>MinimapClose<cr>
 nnoremap <leader>mt <cmd>MinimapToggle<cr>
 
 
-
-
-
-
+" see https://github.com/hrsh7th/nvim-cmp/
+set completeopt=menu,menuone,noselect
