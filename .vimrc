@@ -45,13 +45,13 @@ autocmd FileType yaml setlocal tabstop=2 softtabstop=2 shiftwidth=2
 
 
 
-autocmd FileType php colorscheme gruvbox
+autocmd FileType php colorscheme gruvbox-material
 autocmd FileType java colorscheme gruvbox
 autocmd FileType kotlin colorscheme gruvbox
 autocmd FileType Swift colorscheme gruvbox
 autocmd FileType python colorscheme gruvbox
 autocmd FileType ruby colorscheme gruvbox
-
+"autocmd FileType javascript colorscheme gruvbox-material
 
 
 "set tabstop=2       " The width of a TAB is set to 4.
@@ -105,9 +105,6 @@ let g:tagbar_type_typescript = {
 
 
 
-
-
-
 " https://github.com/w0rp/ale#faq-disable-linters
 " let g:ale_linters_explicit = 1
 " In ~/.vim/vimrc, or somewhere similar.
@@ -148,10 +145,13 @@ Plugin 'vim-scripts/DBGp-Remote-Debugger-Interface'
 Plugin 'tpope/vim-unimpaired'
 Plugin 'ajh17/Spacegray.vim'
 "Plugin 'morhetz/gruvbox'
+Plugin 'rafamadriz/gruvbox'
+Plugin 'luisiacc/gruvbox-baby'
 Plugin 'ellisonleao/gruvbox.nvim'
+Plugin 'sainnhe/gruvbox-material'
+Plugin 'sainnhe/everforest'
 Plugin 'jnurmine/Zenburn'
 Plugin 'ErichDonGubler/vim-sublime-monokai'
-Plugin 'sainnhe/everforest'
 Plugin 'vim-scripts/Conque-Shell'
 Bundle 'joonty/vim-do'
 Plugin 'Rican7/php-doc-modded'
@@ -183,19 +183,49 @@ Plugin 'mileszs/ack.vim'
 Plugin 'hashivim/vim-terraform'
 Plugin 'EdenEast/nightfox.nvim'
 Plugin 'catppuccin/nvim', { 'as': 'catppuccin' }
+Plugin 'nordtheme/vim'
+Plugin 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 
 Plugin 'AndrewRadev/diffurcate.vim'
 " Plugin 'pedrohdz/vim-yaml-folds'
 
 " see https://github.com/hrsh7th/nvim-cmp/
-Plugin 'neovim/nvim-lspconfig'
-Plugin 'hrsh7th/cmp-nvim-lsp'
-Plugin 'hrsh7th/cmp-buffer'
-Plugin 'hrsh7th/cmp-path'
-Plugin 'hrsh7th/cmp-cmdline'
-Plugin 'hrsh7th/nvim-cmp'
 Plugin 'wfxr/minimap.vim'
 Plugin 'memgraph/cypher.vim'
+
+" nvim debugger
+Plugin 'mfussenegger/nvim-dap'
+Plugin 'rcarriga/nvim-dap-ui'
+
+"Plugin 'puremourning/vimspector'
+
+
+" https://github.com/VonHeikemen/lsp-zero.nvim
+" LSP Support
+Plugin 'neovim/nvim-lspconfig'             " Required
+Plugin 'williamboman/mason.nvim', { 'do': ':MasonUpdate' }
+Plugin 'williamboman/mason-lspconfig.nvim' " Optional
+
+" Autocompletion Engine
+Plugin 'hrsh7th/nvim-cmp'         " Required
+Plugin 'hrsh7th/cmp-nvim-lsp'     " Required
+Plugin 'hrsh7th/cmp-buffer'       " Optional
+Plugin 'hrsh7th/cmp-path'         " Optional
+Plugin 'saadparwaiz1/cmp_luasnip' " Optional
+Plugin 'hrsh7th/cmp-nvim-lua'     " Optional
+
+" floating window - see open_floating_preview in https://neovim.io/doc/user/lsp.html#vim.lsp.buf.rename()
+" https://github.com/SmiteshP/nvim-navbuddy
+Plugin 'SmiteshP/nvim-navic'
+Plugin 'MunifTanjim/nui.nvim'
+Plugin 'SmiteshP/nvim-navbuddy'
+
+
+"  Snippets
+Plugin 'L3MON4D3/LuaSnip'             " Required
+Plugin 'rafamadriz/friendly-snippets' " Optional
+
+Plugin 'VonHeikemen/lsp-zero.nvim', {'branch': 'v1.x'}
 
 " Foi vsnip users.
 Plugin 'hrsh7th/cmp-vsnip'
@@ -204,6 +234,8 @@ Plugin 'heavenshell/vim-jsdoc', {
   \ 'for': ['javascript', 'javascript.jsx','typescript'],
   \ 'do': 'make install'
 \}
+
+Plugin 'mortepau/codicons.nvim'
 
 
 " All of your Plugins must be added before the following line
@@ -278,7 +310,8 @@ map <C-n> :NERDTreeToggle<CR>
 map <C-f> :Buffers<CR>
 "nnoremap <C-f> <cmd>Telescope buffers<cr>
 
-map <C-h> :BTags<CR>
+"map <C-h> :BTags<CR>
+map <C-h> :Navbuddy<CR>
 "nnoremap <C-h> <cmd>Telescope current_buffer_tags<cr>
 
 map <C-g> :Tags<CR>
@@ -342,8 +375,19 @@ let g:vdebug_options["port"] = 9000
 
 " debugger
 "map <C-g> :Breakpoint
-:nnoremap <leader>-g :Breakpoint 
-map <C-e> :VdebugEval
+"":nnoremap <leader>-g :Breakpoint 
+"map <C-e> :VdebugEval
+
+" set breakpoint 
+nnoremap <leader>db :lua require'dap'.toggle_breakpoint()<CR> 
+" launch debug sessions and resuming execution
+nnoremap <leader>dd :lua require'dap'.continue()<CR>
+" step over
+nnoremap <leader>do :lua require'dap'.step_over()<CR>
+" step into
+nnoremap <leader>di :lua require'dap'.step_into()<CR>
+" open repl
+nnoremap <leader>di :lua require'dap'.repl.open()<CR>
 
 
 " to get number of occurences of a string
@@ -392,3 +436,16 @@ nnoremap <leader>mt <cmd>MinimapToggle<cr>
 
 " see https://github.com/hrsh7th/nvim-cmp/
 set completeopt=menu,menuone,noselect
+
+" fold
+nnoremap <leader>f zfa}
+" zf <motion> - create
+" za - expand
+nnoremap <SPACE> za
+
+set foldmethod=manual
+ "colorscheme nord
+
+ " silence syntax aanlayzer
+ " https://github.com/dense-analysis/ale
+ let g:ale_set_highlights = 0
