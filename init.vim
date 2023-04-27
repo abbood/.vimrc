@@ -104,7 +104,7 @@ lua <<EOF
     vim.keymap.set('n', '<space>D', vim.lsp.buf.type_definition, bufopts)
     vim.keymap.set('n', '<space>rn', vim.lsp.buf.rename, bufopts)
     vim.keymap.set('n', '<space>ca', vim.lsp.buf.code_action, bufopts)
-    vim.keymap.set('n', 'gr', vim.lsp.buf.references, bufopts)
+--    vim.keymap.set('n', 'gr', vim.lsp.buf.references, bufopts)
     vim.keymap.set('n', 'gi', vim.lsp.buf.incoming_calls, bufopts)
     vim.keymap.set('n', 'go', vim.lsp.buf.outgoing_calls, bufopts)
     vim.keymap.set('n', '<space>f', function() vim.lsp.buf.format { async = true } end, bufopts)
@@ -132,7 +132,7 @@ lua <<EOF
 
   local lspconfig = require('lspconfig')
   local navbuddy = require('nvim-navbuddy')
-  local servers = { 'tsserver', 'eslint' } --- in my example I'm using gopls and pyright servers
+  local servers = { 'tsserver', 'eslint', 'bashls' } --- in my example I'm using gopls and pyright servers
 
   for _, lsp in ipairs(servers) do
       lspconfig[lsp].setup {
@@ -143,7 +143,7 @@ lua <<EOF
             navbuddy.attach(client, bufnr)
             vim.keymap.set('n', 'gd', vim.lsp.buf.definition, bufopts)
             vim.keymap.set('n', 'gl', vim.diagnostic.open_float, opts)
-            vim.keymap.set('n', 'gr', vim.lsp.buf.references, bufopts)
+            --vim.keymap.set('n', 'gr', vim.lsp.buf.references, bufopts)
           end
       }
   end
