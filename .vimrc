@@ -311,11 +311,27 @@ map <C-f> :Buffers<CR>
 "nnoremap <C-f> <cmd>Telescope buffers<cr>
 
 "map <C-h> :BTags<CR>
-map <C-h> :Navbuddy<CR>
+"map <C-h> :Navbuddy<CR>
 "nnoremap <C-h> <cmd>Telescope current_buffer_tags<cr>
+" https://github.com/nvim-telescope/telescope.nvim#neovim-lsp-pickers
+nnoremap <C-h> :lua require'telescope.builtin'.lsp_document_symbols{}<cr>
 
-map <C-g> :Tags<CR>
+" map <C-g> :Tags<CR>
 "nnoremap <C-g> <cmd>Telescope tags<cr>
+"nnoremap <C-g> :lua require'telescope.builtin'.lsp_workspace_symbols{}<cr>
+map <C-g> :Navbuddy<CR>
+
+nnoremap gr :lua require'telescope.builtin'.lsp_references{}<cr>
+
+nnoremap gc :lua require'telescope.builtin'.git_commits{}<cr>
+nnoremap gbc :lua require'telescope.builtin'.git_bcommits{}<cr>
+
+nnoremap gcc :lua require'telescope.builtin'.colorscheme{}<cr>
+
+nnoremap gk :lua require'telescope.builtin'.grep_string{}<cr>
+nnoremap gg :lua require'telescope.builtin'.live_grep{}<cr>
+nnoremap ggg :lua require'telescope.builtin'.resume{}<cr>
+
 
 
 
