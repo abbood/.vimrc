@@ -4,8 +4,14 @@ source ~/.vimrc
 let g:python3_host_prog='/Users/abdullah/.pyenv/shims/python3'
 let g:python_host_prog='/usr/bin/python2'
 
+set termguicolors
+
+
+lua require('plugins')
 
 lua <<EOF
+
+
 
   -- Set up nvim-cmp.
   local cmp = require'cmp'
@@ -92,7 +98,7 @@ lua <<EOF
     -- to go back after jumping to definition hit <C-o>, 
     -- see https://github.com/prabirshrestha/vim-lsp/issues/434#issuecomment-511365530
     --vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, bufopts) // not gonna be used much, so we'll put it in the hover thing instead
-    vim.keymap.set('n', 'gd', vim.lsp.buf.definition, bufopts)
+    --vim.keymap.set('n', 'gd', vim.lsp.buf.definition, bufopts)
     -- vim.keymap.set('n', 'K', vim.lsp.buf.hover, bufopts)
     vim.keymap.set('n', 'gD', vim.lsp.buf.hover, bufopts)
     -- vim.keymap.set('n', '<C-h>', vim.lsp.buf.document_symbol, bufopts)
@@ -122,17 +128,12 @@ lua <<EOF
     }
   }
 
-  -- The nvim-cmp almost supports LSP's capabilities so You should advertise it to LSP servers..
- --  local capabilities = require('cmp_nvim_lsp').default_capabilities()
-
   -- Setup lspconfig.
   -- see https://github.com/hrsh7th/nvim-cmp/issues/382#issuecomment-1166058387
   local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
-  -- local capabilities = require('cmp_nvim_lsp').default_capabilities()
-
   local lspconfig = require('lspconfig')
   local navbuddy = require('nvim-navbuddy')
-  local servers = { 'tsserver', 'eslint', 'bashls' } --- in my example I'm using gopls and pyright servers
+  local servers = { 'tsserver', 'eslint', 'bashls','jsonls','sumneko_lua' } 
 
   for _, lsp in ipairs(servers) do
       lspconfig[lsp].setup {
@@ -142,8 +143,13 @@ lua <<EOF
           on_attach = function(client, bufnr)
             navbuddy.attach(client, bufnr)
             vim.keymap.set('n', 'gd', vim.lsp.buf.definition, bufopts)
+            vim.keymap.set('n', 'gv', function() 
+                    vim.cmd([[
+                        vsplit
+                        ]])
+                        vim.lsp.buf.definition()
+            end, bufopts)
             vim.keymap.set('n', 'gl', vim.diagnostic.open_float, opts)
-            --vim.keymap.set('n', 'gr', vim.lsp.buf.references, bufopts)
           end
       }
   end
@@ -194,11 +200,63 @@ lua <<EOF
 
   codicons.setup({
     -- Override by mapping name to icon
-    ['account'] = 'ÓÆô',
+    ['account'] = '',
     -- Or by name to hexadecimal/decimal value
     ['comment'] = 0xEA6B, -- hexadecimal
     ['archive'] = 60056, -- decimal
   })
 
+  vim.diagnostic.config({ virtual_text = false })
 
+  -- disable netrw at the very start of your init.lua
+  vim.g.loaded_netrw = 1
+  vim.g.loaded_netrwPlugin = 1
+
+  -- set termguicolors to enable highlight groups
+  vim.opt.termguicolors = true
+
+  -- empty setup using defaults
+  require("nvim-tree").setup()
+
+  -- OR setup with some options
+  require("nvim-tree").setup({
+    sort_by = "case_sensitive",
+    view = {
+      width = 30,
+    },
+    renderer = {
+      group_empty = true,
+    },
+    filters = {
+      dotfiles = true,
+    },
+  })
+
+  require('telescope').setup{
+    defaults = {
+      -- Default configuration for telescope goes here:
+      -- config_key = value,
+      file_ignore_patterns = {"build","test"}
+    },
+  }
+
+  require("indent_blankline").setup {
+    -- for example, context is off by default, use this to turn it on
+    show_current_context = true,
+    show_current_context_start = true,
+  }
+
+  vim.api.nvim_set_keymap('n', '<leader>d', ':lua DuplicateNvimTreeFile()<CR>', { noremap = true })
+
+  function DuplicateNvimTreeFile()
+    local filename = vim.fn.fnamemodify(vim.fn.expand('%'), ':t')
+    local new_filename = filename .. '_copy'
+    vim.cmd('silent! !cp % ' .. new_filename)
+    vim.cmd('edit ' .. new_filename)
+    vim.cmd('redraw!')
+    print("File duplicated as " .. new_filename)
+  end
+    
 EOF
+
+
