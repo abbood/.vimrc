@@ -7,6 +7,7 @@ let g:spacegray_low_contrast = 1
 
 
 colorscheme spacegray
+
 " colorscheme hybrid_material
 "colorscheme sonokai
 "
@@ -42,6 +43,9 @@ autocmd FileType cucumber setlocal tabstop=4 softtabstop=4 shiftwidth=4
 autocmd FileType typescript setlocal tabstop=2 softtabstop=2 shiftwidth=2
 autocmd FileType swift setlocal tabstop=4 softtabstop=4 shiftwidth=4
 autocmd FileType yaml setlocal tabstop=2 softtabstop=2 shiftwidth=2
+autocmd FileType lua setlocal tabstop=2 softtabstop=2 shiftwidth=2
+autocmd FileType vim setlocal tabstop=2 softtabstop=2 shiftwidth=2
+autocmd FileType cypher setlocal tabstop=4 softtabstop=4 shiftwidth=4
 
 
 
@@ -51,6 +55,7 @@ autocmd FileType kotlin colorscheme gruvbox
 autocmd FileType Swift colorscheme gruvbox
 autocmd FileType python colorscheme gruvbox
 autocmd FileType ruby colorscheme gruvbox
+autocmd FileType shell colorscheme spacegray
 "autocmd FileType javascript colorscheme gruvbox-material
 
 
@@ -76,13 +81,13 @@ let g:ale_emit_conflict_warnings = 0
 
 " to quickly remove errors from ts
 " https://github.com/w0rp/ale#faq-disable-linters
-" let g:ale_linters_explicit = 1
+ let g:ale_linters_explicit = 1
 
-let g:ale_linters = {
-\   'javascript': ['eslint'],
-\   'typescript': ['tslint'],
-\   'php': ['php'],
-\}
+"let g:ale_linters = {
+" \   'javascript': ['eslint'],
+"\   'typescript': ['tslint'],
+"\   'php': ['php'],
+"\}
 
 let g:tagbar_type_typescript = {
   \ 'ctagsbin' : 'tstags',
@@ -127,11 +132,17 @@ Plugin 'junegunn/fzf.vim'
 Plugin 'nvim-lua/plenary.nvim'
 Plugin 'nvim-telescope/telescope.nvim'
 
-Plugin 'scrooloose/nerdtree'
+" Plugin 'scrooloose/nerdtree'
+" nerdtree has been deprecated, see https://www.reddit.com/r/neovim/comments/qkbx5n/nerdtree_alternative/
+Plugin 'nvim-tree/nvim-web-devicons' " optional
+Plugin 'nvim-tree/nvim-tree.lua'
+
 Plugin 'burnettk/vim-angular'
 
 " replaced with https://github.com/hrsh7th/nvim-cmp/ 
 " Plugin 'vim-scripts/AutoComplPop'
+
+Plugin 'Shougo/vimproc.vim'
 
 Plugin 'vim-scripts/cSyntaxAfter'
 Plugin 'w0ng/vim-hybrid'
@@ -144,11 +155,13 @@ Plugin 'vim-airline/vim-airline-themes'
 Plugin 'vim-scripts/DBGp-Remote-Debugger-Interface'
 Plugin 'tpope/vim-unimpaired'
 Plugin 'ajh17/Spacegray.vim'
-"Plugin 'morhetz/gruvbox'
-Plugin 'rafamadriz/gruvbox'
-Plugin 'luisiacc/gruvbox-baby'
-Plugin 'ellisonleao/gruvbox.nvim'
-Plugin 'sainnhe/gruvbox-material'
+"Plugin 'rafamadriz/gruvbox'
+"Plugin 'luisiacc/gruvbox-baby'
+"Plugin 'ellisonleao/gruvbox.nvim'
+"Plugin 'sainnhe/gruvbox-material'
+Plugin 'morhetz/gruvbox'
+Plugin 'lifepillar/vim-gruvbox8'
+Plugin 'rebelot/kanagawa.nvim'
 Plugin 'sainnhe/everforest'
 Plugin 'jnurmine/Zenburn'
 Plugin 'ErichDonGubler/vim-sublime-monokai'
@@ -185,6 +198,13 @@ Plugin 'EdenEast/nightfox.nvim'
 Plugin 'catppuccin/nvim', { 'as': 'catppuccin' }
 Plugin 'nordtheme/vim'
 Plugin 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+Plugin 'tpope/vim-dadbod',
+Plugin 'kristijanhusak/vim-dadbod-ui',
+Plugin 'pbogut/vim-dadbod-ssh'
+Plugin 'kristijanhusak/vim-dadbod-completion'
+Plugin 'flrnd/plastic.vim'
+
+Plugin 'itchyny/lightline.vim'
 
 Plugin 'AndrewRadev/diffurcate.vim'
 " Plugin 'pedrohdz/vim-yaml-folds'
@@ -197,6 +217,12 @@ Plugin 'memgraph/cypher.vim'
 Plugin 'mfussenegger/nvim-dap'
 Plugin 'rcarriga/nvim-dap-ui'
 
+Plugin 'godlygeek/tabular'
+Plugin 'preservim/vim-markdown'
+Plugin 'github/copilot.vim'
+
+Plugin 'logico/typewriter-vim'
+
 "Plugin 'puremourning/vimspector'
 
 
@@ -205,6 +231,8 @@ Plugin 'rcarriga/nvim-dap-ui'
 Plugin 'neovim/nvim-lspconfig'             " Required
 Plugin 'williamboman/mason.nvim', { 'do': ':MasonUpdate' }
 Plugin 'williamboman/mason-lspconfig.nvim' " Optional
+
+Plugin 'lukas-reineke/indent-blankline.nvim'
 
 " Autocompletion Engine
 Plugin 'hrsh7th/nvim-cmp'         " Required
@@ -237,6 +265,17 @@ Plugin 'heavenshell/vim-jsdoc', {
 
 Plugin 'mortepau/codicons.nvim'
 
+Plugin 'tpope/vim-surround'
+Plugin 'tpope/vim-repeat'
+
+Plugin 'nathanaelkane/vim-indent-guides'
+Plugin 'tpope/vim-abolish'
+
+Plugin 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build' }
+
+Plugin 'kkharji/sqlite.lua'
+Plugin 'nvim-telescope/telescope-smart-history.nvim'
+Plugin 'dahu/bisectly'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -298,14 +337,29 @@ nmap <F12> :CtrlP<CR>
 
 nmap <F1> :cclose<CR>
 
-" Nerdtree
-map <C-n> :NERDTreeToggle<CR>
+map <C-n> :NvimTreeToggle<CR>
+map <Leader>n :NvimTreeFindFileToggle<CR>
+map <C-l> :NvimTreeResize +10<CR>
+map <Leader>l :NvimTreeResize -10<CR>
+
+
+" jump to beginning of method
+" https://stackoverflow.com/a/2109620/766570
+nnoremap <Leader>m [m
+
+
+
 
 " replacing FZF shortcuts with telescope
 " feel free to undo
 " ------------------------------------------
  map <C-j> :FZF<CR>
 " nnoremap <C-j> <cmd>Telescope find_files<cr>
+
+nnoremap <leader>j :lua require'telescope.builtin'.current_buffer_fuzzy_find{}<cr>
+
+nnoremap <leader>i :lua require'telescope.actions'.cycle_history_next{}<cr>
+nnoremap <leader>y :lua require'telescope.actions'.cycle_history_prev{}<cr>
 
 map <C-f> :Buffers<CR>
 "nnoremap <C-f> <cmd>Telescope buffers<cr>
@@ -315,11 +369,27 @@ map <C-f> :Buffers<CR>
 "nnoremap <C-h> <cmd>Telescope current_buffer_tags<cr>
 " https://github.com/nvim-telescope/telescope.nvim#neovim-lsp-pickers
 nnoremap <C-h> :lua require'telescope.builtin'.lsp_document_symbols{}<cr>
+"nnoremap <leader>g :lua require'telescope.builtin'.lsp_workspace_symbols{}<cr>
+
+
+
+" git browsing
+" buffer commits
+nnoremap <leader>c :lua require'telescope.builtin'.git_bcommits{}<cr>
+" all commits
+nnoremap <leader>ca :lua require'telescope.builtin'.git_commits{}<cr>
+" git status
+nnoremap <leader>s :lua require'telescope.builtin'.git_status{}<cr>
+" git branches
+nnoremap <leader>r :lua require'telescope.builtin'.git_branches{}<cr>
+
+" command history
+nnoremap <leader>cc :lua require'telescope.builtin'.command_history{}<cr>
 
 " map <C-g> :Tags<CR>
 "nnoremap <C-g> <cmd>Telescope tags<cr>
 "nnoremap <C-g> :lua require'telescope.builtin'.lsp_workspace_symbols{}<cr>
-map <C-g> :Navbuddy<CR>
+map <leader>ga :Navbuddy<CR>
 
 nnoremap gr :lua require'telescope.builtin'.lsp_references{}<cr>
 
@@ -330,7 +400,10 @@ nnoremap gcc :lua require'telescope.builtin'.colorscheme{}<cr>
 
 nnoremap gk :lua require'telescope.builtin'.grep_string{}<cr>
 nnoremap gg :lua require'telescope.builtin'.live_grep{}<cr>
+nnoremap gb :lua require'telescope.builtin'.current_buffer_fuzzy_find{}<cr>
 nnoremap ggg :lua require'telescope.builtin'.resume{}<cr>
+" navbuddy
+nnoremap ga :lua require'telescope.builtin'.lsp_dynamic_workspace_symbols{}<cr>
 
 
 
@@ -338,9 +411,9 @@ nnoremap ggg :lua require'telescope.builtin'.resume{}<cr>
 " ------------------------------------------
 
 map <C-c> :cclose<CR>
-map <C-l> :copen 50<CR>
-map <leader>l :copen 10<CR>
-map <leader>c :copen 10<CR>
+"map <C-l> :copen 50<CR>
+"map <leader>l :copen 10<CR>
+"map <leader>c :copen 10<CR>
 map <leader>b :Git blame<CR> 
 
 " arabic support
@@ -350,9 +423,9 @@ map <leader>b :Git blame<CR>
 " agit show
 nnoremap <C-i> :Agit<CR>
 
-noremap <F9> :vertical botright copen 60<cr>
+"noremap <F9> :vertical botright copen 60<cr>
 "noremap <F10> :copen 40<cr>
-map <C-1> :copen 40<cr>
+"map <C-1> :copen 40<cr>
 
 " to split under vimrc
 " https://vi.stackexchange.com/a/14805/14510
@@ -399,6 +472,7 @@ nnoremap <leader>db :lua require'dap'.toggle_breakpoint()<CR>
 " launch debug sessions and resuming execution
 nnoremap <leader>dd :lua require'dap'.continue()<CR>
 " step over
+"
 nnoremap <leader>do :lua require'dap'.step_over()<CR>
 " step into
 nnoremap <leader>di :lua require'dap'.step_into()<CR>
@@ -445,23 +519,96 @@ nnoremap <leader>fg <cmd>Telescope live_grep<cr>
 " nnoremap <leader>fb <cmd>Telescope buffers<cr>
 nnoremap <leader>fh <cmd>Telescope help_tags<cr>
 
-nnoremap <leader>m <cmd>Minimap<cr>
-nnoremap <leader>mc <cmd>MinimapClose<cr>
+"nnoremap <leader>m <cmd>Minimap<cr>
+"nnoremap <leader>mc <cmd>MinimapClose<cr>
 nnoremap <leader>mt <cmd>MinimapToggle<cr>
+
+" https://stackoverflow.com/a/61935629/766570
+" sorrounding word with quote
+" usage ss <character to surround with>
+map ss ysiw
 
 
 " see https://github.com/hrsh7th/nvim-cmp/
 set completeopt=menu,menuone,noselect
 
 " fold
-nnoremap <leader>f zfa}
+" this should automatically fold btw the braces, but it never gets it right
+" nnoremap <leader>f zfa} // 
 " zf <motion> - create
 " za - expand
 nnoremap <SPACE> za
 
+" fast way to fold
+nnoremap <Leader>f :<C-u>call CustomFold()<CR>
+function! CustomFold()
+    let motion = input("Enter motion key or line number for folding: ")
+    if motion =~ '^\d\+$'   " Check if the input is a line number
+        let current_line = line('.')
+        execute current_line . ',' . motion . 'fold'
+    else
+        execute 'normal! zf' . motion
+    endif
+endfunction
+
+" unfold everything
+nnoremap <Leader>uf zi<CR>
+
+
+
 set foldmethod=manual
  "colorscheme nord
 
- " silence syntax aanlayzer
- " https://github.com/dense-analysis/ale
- let g:ale_set_highlights = 0
+" silence syntax aanlayzer
+" https://github.com/dense-analysis/ale
+let g:ale_set_highlights = 0
+
+ "Use 24-bit (true-color) mode in Vim/Neovim when outside tmux.
+"If you're using tmux version 2.2 or later, you can remove the outermost $TMUX check and use tmux's 24-bit color support
+"(see < http://sunaku.github.io/tmux-24bit-color.html#usage > for more information.)
+if (empty($TMUX))
+  if (has("nvim"))
+    "For Neovim 0.1.3 and 0.1.4 < https://github.com/neovim/neovim/pull/2198 >
+    let $NVIM_TUI_ENABLE_TRUE_COLOR=1
+  endif
+  "For Neovim > 0.1.5 and Vim > patch 7.4.1799 < https://github.com/vim/vim/commit/61be73bb0f965a895bfb064ea3e55476ac175162 >
+  "Based on Vim patch 7.4.1770 (`guicolors` option) < https://github.com/vim/vim/commit/8a633e3427b47286869aa4b96f2bfc1fe65b25cd >
+  " < https://github.com/neovim/neovim/wiki/Following-HEAD#20160511 >
+  if (has("termguicolors"))
+    set termguicolors
+  endif
+endif
+let g:gruvbox_contrast_dark = 'soft'
+let g:gruvbox_italic=1
+"colorscheme gruvbox
+"colorscheme kanagawa
+colorscheme typewriter-night " piotr version
+"colorscheme plastic
+
+
+" https://github.com/kristijanhusak/vim-dadbod-ui#table-helpers
+let g:db_ui_auto_execute_table_helpers = 1
+
+" https://gist.github.com/andersevenrud/015e61af2fd264371032763d4ed965b6
+if !has('gui_running') && &term =~ '^\%(screen\|tmux\)'
+  let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+  let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
+endif
+
+function! ToggleQuickFix()
+    if empty(filter(getwininfo(), 'v:val.quickfix'))
+        copen
+    else
+        cclose
+    endif
+endfunction
+
+nnoremap <leader>w :call ToggleQuickFix()<cr>
+
+highlight IncSearch guibg=green ctermbg=green term=underline
+
+" useful for converting js cypher code to neo4j browser cypher 
+" to replace params
+nnoremap <leader>ww :%s/"\${\(\w\+\)}"/$\1/g<CR>
+" undo
+nnoremap <leader>x :%s/\$\(\w\+\)/"${\1}"/g
